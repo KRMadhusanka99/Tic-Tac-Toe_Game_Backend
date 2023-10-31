@@ -1,6 +1,6 @@
-package com.example.tictactoe.controller;
+package com.app.tictactoe.controller;
 
-import com.example.tictactoe.service.PlayerService;
+import com.app.tictactoe.service.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 

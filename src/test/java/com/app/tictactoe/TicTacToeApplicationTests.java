@@ -1,4 +1,4 @@
-package com.example.tictactoe;
+package com.app.tictactoe;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

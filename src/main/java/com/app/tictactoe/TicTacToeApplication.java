@@ -1,4 +1,4 @@
-package com.example.tictactoe;
+package com.app.tictactoe;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
