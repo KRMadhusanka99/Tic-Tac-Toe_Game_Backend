@@ -1,5 +1,7 @@
 package com.app.tictactoe.service;
 
-public interface PlayerService {
+import com.app.tictactoe.model.Player;
 
+public interface PlayerService {
+    String addPlayer (Player player);
 }
