@@ -12,8 +12,19 @@ public class PlayerServiceImpl implements PlayerService {
     private PlayerRepository playerRepository;
 
     @Override
-    public String addPlayer(Player player) {
-        Player savedPlayer = playerRepository.save(player);
-        return savedPlayer.getPlayerName() + " " + "is successfully registered.";
+    public Player addPlayer(Player player) {
+        // Check if playerName already exists
+        Player existingPlayer = playerRepository.findByPlayerName(player.getPlayerName());
+        if (existingPlayer != null) {
+            // Handle duplicate player name (throw exception or return null, etc.)
+            return null;
+        }
+
+        Player newPlayer = new Player();
+        newPlayer.setPlayerName(player.getPlayerName());
+        newPlayer.setPassword(player.getPassword());
+
+        Player savedPlayer = playerRepository.save(newPlayer);
+        return savedPlayer;
     }
 }
