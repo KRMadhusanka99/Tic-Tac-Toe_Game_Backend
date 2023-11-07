@@ -1,6 +1,7 @@
 package com.app.tictactoe.service.implementation;
 
-import com.app.tictactoe.exception.PlayerRegistrationException;
+import com.app.tictactoe.exception.DuplicatePlayerException;
+import com.app.tictactoe.exception.InvalidInputException;
 import com.app.tictactoe.model.Player;
 import com.app.tictactoe.repository.PlayerRepository;
 import com.app.tictactoe.service.PlayerService;
@@ -16,10 +17,16 @@ public class PlayerServiceImpl implements PlayerService {
     public Player addPlayer(Player player) {
         // Check if playerName already exists
         Player existingPlayer = playerRepository.findByPlayerName(player.getPlayerName());
+
         if (existingPlayer != null) {
             // Handle duplicate player name (throw exception or return null, etc.)
-            throw new PlayerRegistrationException("Player with this name "+player.getPlayerName()+" is already exists.");
-            //return null;
+            throw new DuplicatePlayerException("Player with this name "+player.getPlayerName()+" is already exists.");
+        }
+
+        //Check legal Arguments
+        if(player.getPlayerName() == null || player.getPlayerName().isEmpty() ||
+                player.getPassword() == null || player.getPassword().isEmpty()) {
+            throw new InvalidInputException("Player name and password cannot be empty");
         }
 
         Player newPlayer = new Player();
