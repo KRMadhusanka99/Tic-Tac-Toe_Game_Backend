@@ -23,10 +23,10 @@ public class PlayerController {
     private PlayerService playerService;
 
     @PostMapping("/register")
-    public ResponseEntity<PlayerResponseDTO> addPlayer(@Valid @RequestBody PlayerRequestRegisterDTO playerRequestRegisterDTO){
+    public ResponseEntity<PlayerResponseDTO> addPlayer(@RequestBody PlayerRequestRegisterDTO playerRequestRegisterDTO){
         try {
             Player savedPlayer = playerService.addPlayer(playerRequestRegisterDTO);
-            return ResponseEntity.ok(new PlayerResponseDTO("Player "+savedPlayer.getPlayerName()+" is successfully registered."));
+            return ResponseEntity.ok(new PlayerResponseDTO("Player "+savedPlayer.getPlayerName()+ " is successfully registered."));
         } catch (DuplicatePlayerException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new PlayerResponseDTO(e.getMessage()));
         } catch (InvalidInputException e){

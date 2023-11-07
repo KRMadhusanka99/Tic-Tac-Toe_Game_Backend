@@ -7,6 +7,7 @@ import com.app.tictactoe.model.Player;
 import com.app.tictactoe.repository.PlayerRepository;
 import com.app.tictactoe.service.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,7 +22,7 @@ public class PlayerServiceImpl implements PlayerService {
 
         if (existingPlayer != null) {
             // Handle duplicate player name (throw exception or return null, etc.)
-            throw new DuplicatePlayerException("Player with this name "+playerRequestRegisterDTO.getPlayerName()+" is already exists.");
+            throw new DuplicatePlayerException("Player with this name is already exists.");
         }
 
         //Check legal Arguments
@@ -30,10 +31,14 @@ public class PlayerServiceImpl implements PlayerService {
             throw new InvalidInputException("Player name and password cannot be empty");
         }
 
+        //encrypt to password before store
+        BCryptPasswordEncoder bCryptPasswordEncode = new BCryptPasswordEncoder();
+        String  encryptedPassword = bCryptPasswordEncode.encode(playerRequestRegisterDTO.getPassword());
+
         // Change DTO to Model entity
         Player newPlayer = new Player(
                 playerRequestRegisterDTO.getPlayerName(),
-                playerRequestRegisterDTO.getPassword()
+                encryptedPassword
         );
 
         //save the new player
