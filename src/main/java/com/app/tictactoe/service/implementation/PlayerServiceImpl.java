@@ -1,5 +1,6 @@
 package com.app.tictactoe.service.implementation;
 
+import com.app.tictactoe.exception.PlayerRegistrationException;
 import com.app.tictactoe.model.Player;
 import com.app.tictactoe.repository.PlayerRepository;
 import com.app.tictactoe.service.PlayerService;
@@ -17,7 +18,8 @@ public class PlayerServiceImpl implements PlayerService {
         Player existingPlayer = playerRepository.findByPlayerName(player.getPlayerName());
         if (existingPlayer != null) {
             // Handle duplicate player name (throw exception or return null, etc.)
-            return null;
+            throw new PlayerRegistrationException("Player with this name "+player.getPlayerName()+" is already exists.");
+            //return null;
         }
 
         Player newPlayer = new Player();
