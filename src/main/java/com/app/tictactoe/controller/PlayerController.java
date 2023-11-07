@@ -1,5 +1,7 @@
 package com.app.tictactoe.controller;
 
+import com.app.tictactoe.dto.RequestDTO.PlayerRequestRegisterDTO;
+import com.app.tictactoe.dto.ResponseDTO.PlayerResponseDTO;
 import com.app.tictactoe.exception.DuplicatePlayerException;
 import com.app.tictactoe.exception.InvalidInputException;
 import com.app.tictactoe.model.Player;
@@ -20,12 +22,20 @@ public class PlayerController {
     private PlayerService playerService;
 
     @PostMapping("/register")
-    public ResponseEntity<String> addPlayer(@RequestBody Player player){
+    public ResponseEntity<PlayerResponseDTO> addPlayer(@RequestBody PlayerRequestRegisterDTO playerRequestRegisterDTO){
         try {
-            Player savedPlayer = playerService.addPlayer(player);
-            return ResponseEntity.ok("Player "+savedPlayer.getPlayerName()+" is successfully registered.");
-        } catch (DuplicatePlayerException | InvalidInputException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+            Player savedPlayer = playerService.addPlayer(playerRequestRegisterDTO);
+            PlayerResponseDTO playerResponseDTO = new PlayerResponseDTO();
+            playerResponseDTO.setMessage("Player "+savedPlayer.getPlayerName()+" is successfully registered.");
+            return ResponseEntity.ok(playerResponseDTO);
+        } catch (DuplicatePlayerException e) {
+            PlayerResponseDTO playerResponseDTO = new PlayerResponseDTO();
+            playerResponseDTO.setMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(playerResponseDTO);
+        } catch (InvalidInputException e){
+            PlayerResponseDTO playerResponseDTO = new PlayerResponseDTO();
+            playerResponseDTO.setMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(playerResponseDTO);
         }
     }
 }
