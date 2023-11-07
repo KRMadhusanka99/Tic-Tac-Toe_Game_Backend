@@ -30,11 +30,13 @@ public class PlayerServiceImpl implements PlayerService {
             throw new InvalidInputException("Player name and password cannot be empty");
         }
 
+        // Change DTO to Model entity
         Player newPlayer = new Player(
                 playerRequestRegisterDTO.getPlayerName(),
                 playerRequestRegisterDTO.getPassword()
         );
 
+        //save the new player
         Player savedPlayer = playerRepository.save(newPlayer);
         return savedPlayer;
     }

@@ -9,4 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PlayerResponseDTO {
     private String message;
+
+
 }

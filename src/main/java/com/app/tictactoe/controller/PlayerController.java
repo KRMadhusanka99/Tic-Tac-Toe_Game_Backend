@@ -6,6 +6,7 @@ import com.app.tictactoe.exception.DuplicatePlayerException;
 import com.app.tictactoe.exception.InvalidInputException;
 import com.app.tictactoe.model.Player;
 import com.app.tictactoe.service.PlayerService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,20 +23,14 @@ public class PlayerController {
     private PlayerService playerService;
 
     @PostMapping("/register")
-    public ResponseEntity<PlayerResponseDTO> addPlayer(@RequestBody PlayerRequestRegisterDTO playerRequestRegisterDTO){
+    public ResponseEntity<PlayerResponseDTO> addPlayer(@Valid @RequestBody PlayerRequestRegisterDTO playerRequestRegisterDTO){
         try {
             Player savedPlayer = playerService.addPlayer(playerRequestRegisterDTO);
-            PlayerResponseDTO playerResponseDTO = new PlayerResponseDTO();
-            playerResponseDTO.setMessage("Player "+savedPlayer.getPlayerName()+" is successfully registered.");
-            return ResponseEntity.ok(playerResponseDTO);
+            return ResponseEntity.ok(new PlayerResponseDTO("Player "+savedPlayer.getPlayerName()+" is successfully registered."));
         } catch (DuplicatePlayerException e) {
-            PlayerResponseDTO playerResponseDTO = new PlayerResponseDTO();
-            playerResponseDTO.setMessage(e.getMessage());
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(playerResponseDTO);
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new PlayerResponseDTO(e.getMessage()));
         } catch (InvalidInputException e){
-            PlayerResponseDTO playerResponseDTO = new PlayerResponseDTO();
-            playerResponseDTO.setMessage(e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(playerResponseDTO);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PlayerResponseDTO(e.getMessage()));
         }
     }
 }
