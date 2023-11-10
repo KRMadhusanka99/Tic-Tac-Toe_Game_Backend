@@ -6,7 +6,6 @@ import com.app.tictactoe.exception.DuplicatePlayerException;
 import com.app.tictactoe.exception.InvalidInputException;
 import com.app.tictactoe.model.Player;
 import com.app.tictactoe.service.PlayerService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
