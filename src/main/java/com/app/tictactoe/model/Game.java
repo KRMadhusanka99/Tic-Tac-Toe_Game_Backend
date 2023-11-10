@@ -10,11 +10,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table
-public class GameBoard {
+public class Game {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int gameId;
-    private int roundNo;
-    private String userPosition;
-    private String serverPosition;
+    
+    private int userId;
+    private char userSelection; //X or O
+    private String gameStatus;
+    private String winner;
 }
