@@ -8,5 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GameRequestStartDTO {
+    private int playerId;
     private String playerName;
 }

@@ -22,9 +22,7 @@ public class Game {
     @JoinColumn
     private Player player;
 
-    private String[][] gameBoard= new String [3][3];
-
-    private String gameStatus;
+    private String firstMove;
     private String winner;
     private boolean gameOver;
 }
