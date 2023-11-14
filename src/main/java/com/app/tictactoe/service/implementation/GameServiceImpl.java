@@ -9,7 +9,9 @@ import com.app.tictactoe.repository.GameRepository;
 import com.app.tictactoe.repository.PlayerRepository;
 import com.app.tictactoe.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class GameServiceImpl implements GameService {
     @Autowired
     private GameRepository gameRepository;
@@ -36,6 +38,7 @@ public class GameServiceImpl implements GameService {
         Game game = new Game();
         game.setPlayer(existingPlayer);
         game.setFirstMove(firstMove);
+        game.setGameOver(false);
 
         gameRepository.save(game);
         return existingPlayer;
