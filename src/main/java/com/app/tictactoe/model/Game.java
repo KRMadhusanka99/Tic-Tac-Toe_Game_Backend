@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.security.PrivateKey;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,9 +17,13 @@ public class Game {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int gameId;
-    
-    private int userId;
-    private char userSelection; //X or O
+
+    @ManyToOne
+    private Player player;
+
+    private String[][] gameBoard= new String [3][3];
+
     private String gameStatus;
     private String winner;
+    private boolean gameOver;
 }
