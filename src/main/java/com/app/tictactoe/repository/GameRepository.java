@@ -5,5 +5,5 @@ import com.app.tictactoe.model.Player;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface GameRepository extends JpaRepository<Game, Integer> {
-    Player findPlayerAndGameOver(Player player, Boolean gameOver);
+   // Player findPlayerAndGameOver(Player player, Boolean gameOver);
 }

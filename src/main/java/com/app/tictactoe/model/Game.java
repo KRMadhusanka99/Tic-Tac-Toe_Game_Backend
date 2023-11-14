@@ -19,6 +19,7 @@ public class Game {
     private int gameId;
 
     @ManyToOne
+    @JoinColumn
     private Player player;
 
     private String[][] gameBoard= new String [3][3];
