@@ -1,6 +1,7 @@
 package com.app.tictactoe.controller;
 
 import com.app.tictactoe.dto.RequestDTO.GameRequestStartDTO;
+import com.app.tictactoe.dto.RequestDTO.PlayerRequestTurnDTO;
 import com.app.tictactoe.dto.ResponseDTO.GameResponseDTO;
 import com.app.tictactoe.exception.PlayerActiveException;
 import com.app.tictactoe.exception.PlayerNotActiveException;
@@ -40,5 +41,10 @@ public class GameController {
         }catch (PlayerNotExistException | PlayerNotActiveException e){
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new GameResponseDTO(playerName,e.getMessage()));
         }
+    }
+
+    @PostMapping("/playerTurn}")
+    public ResponseEntity<GameResponseDTO> playerTurn(@RequestBody PlayerRequestTurnDTO playerRequestTurnDTO){
+        return ResponseEntity.ok(new GameResponseDTO(playerRequestTurnDTO.getPlayerName(),"X placed successfully"));
     }
 }
