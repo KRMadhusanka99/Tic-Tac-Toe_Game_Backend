@@ -5,13 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.security.PrivateKey;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table
+@Table (name = "game_info_table")
 public class Game {
 
     @Id
@@ -19,7 +17,7 @@ public class Game {
     private int gameId;
 
     @ManyToOne
-    @JoinColumn
+    @JoinColumn(name = "player_id")
     private Player player;
 
     private String firstMove;
