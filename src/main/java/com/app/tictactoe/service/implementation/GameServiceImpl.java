@@ -11,8 +11,10 @@ import com.app.tictactoe.repository.GameBoardRepository;
 import com.app.tictactoe.repository.GameRepository;
 import com.app.tictactoe.repository.PlayerRepository;
 import com.app.tictactoe.service.GameService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 
 @Service
 public class GameServiceImpl implements GameService {
@@ -23,10 +25,10 @@ public class GameServiceImpl implements GameService {
 
     // constructor injection
     @Autowired
-    public GameServiceImpl(GameRepository gameRepository, PlayerRepository playerRepository, GameBoardRepository gameBoardRepository1) {
+    public GameServiceImpl(GameRepository gameRepository, PlayerRepository playerRepository, GameBoardRepository gameBoardRepository) {
         this.gameRepository = gameRepository;
         this.playerRepository = playerRepository;
-        this.gameBoardRepository = gameBoardRepository1;
+        this.gameBoardRepository = gameBoardRepository;
     }
 
     @Override
@@ -57,12 +59,13 @@ public class GameServiceImpl implements GameService {
         // initialize game board
         GameBoard gameBoard = new GameBoard();
         gameBoard.setGame(game);
-        
+
         gameBoardRepository.save(gameBoard);
 
         return existingPlayer;
     }
 
+    @Transactional //manage transactions in Springboot
     @Override
     public Player resetGame(String playerName) {
         //check player exist or not
@@ -84,6 +87,10 @@ public class GameServiceImpl implements GameService {
         game.setWinner("Game Draw");
 
         gameRepository.save(game);
+
+        //clear game board
+        //List<GameBoard> gameBoard = gameBoardRepository.findAllByGameId(gameId);
+        gameBoardRepository.deleteGameBoardByGameId(gameId);
 
         //start new game with same playerName
         GameRequestStartDTO gameRequestStartDTO = new GameRequestStartDTO(existingPlayer.getPlayerName());
