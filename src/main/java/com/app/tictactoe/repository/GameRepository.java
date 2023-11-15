@@ -10,6 +10,6 @@ public interface GameRepository extends JpaRepository<Game, Integer> {
     long findByPlayerIdAndGameOver(int playerId);
 
     @Query("SELECT g.gameId FROM Game g WHERE g.player.id = :playerId AND g.gameOver=false")
-    int gameIdFindByPlayerId(int PlayerId);
+    int gameIdFindByPlayerId(int playerId);
 
 }

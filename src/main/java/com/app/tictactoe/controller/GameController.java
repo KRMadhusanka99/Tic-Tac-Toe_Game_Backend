@@ -3,6 +3,7 @@ package com.app.tictactoe.controller;
 import com.app.tictactoe.dto.RequestDTO.GameRequestStartDTO;
 import com.app.tictactoe.dto.ResponseDTO.GameResponseDTO;
 import com.app.tictactoe.exception.PlayerActiveException;
+import com.app.tictactoe.exception.PlayerNotActiveException;
 import com.app.tictactoe.exception.PlayerNotExistException;
 import com.app.tictactoe.model.Player;
 import com.app.tictactoe.service.GameService;
@@ -26,17 +27,17 @@ public class GameController {
             player = gameService.startGame(gameRequestStartDTO);
             return ResponseEntity.ok(new GameResponseDTO(player.getPlayerName(),"Game start successfully"));
         }catch (PlayerNotExistException | PlayerActiveException e){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(new GameResponseDTO(player.getPlayerName(),e.getMessage()));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new GameResponseDTO(gameRequestStartDTO.getPlayerName(),e.getMessage()));
         }
     }
 
-    @PatchMapping("/reset/{playerName}")
-    public ResponseEntity<GameResponseDTO> resetGame(@PathVariable String playerName){
+    @PatchMapping({"/reset","/reset/{playerName}"}) // Array of End points with not required playerName
+    public ResponseEntity<GameResponseDTO> resetGame(@PathVariable(required = false) String playerName){
         try {
             player = gameService.resetGame(playerName);
             return ResponseEntity.ok().body(new GameResponseDTO(playerName,"Game rest successfully"));
-        }catch (PlayerNotExistException | PlayerActiveException e){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(new GameResponseDTO(player.getPlayerName(),e.getMessage()));
+        }catch (PlayerNotExistException | PlayerNotActiveException e){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new GameResponseDTO(playerName,e.getMessage()));
         }
     }
 }

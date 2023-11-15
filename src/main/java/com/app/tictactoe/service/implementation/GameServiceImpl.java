@@ -12,14 +12,18 @@ import com.app.tictactoe.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 public class GameServiceImpl implements GameService {
+
+    private final GameRepository gameRepository;
+    private final PlayerRepository playerRepository;
+
+    // constructor injection
     @Autowired
-    private GameRepository gameRepository;
-    @Autowired
-    private PlayerRepository playerRepository;
+    public GameServiceImpl(GameRepository gameRepository, PlayerRepository playerRepository) {
+        this.gameRepository = gameRepository;
+        this.playerRepository = playerRepository;
+    }
 
     @Override
     public Player startGame(GameRequestStartDTO gameRequestStartDTO){
@@ -58,7 +62,7 @@ public class GameServiceImpl implements GameService {
 
         //check player active or not
         long noOfGamesByPlayer = gameRepository.findByPlayerIdAndGameOver(existingPlayer.getId());
-        if(noOfGamesByPlayer < 0){
+        if(noOfGamesByPlayer <= 0){
             throw new PlayerNotActiveException("Player is not active in a game.");
         }
 
@@ -69,7 +73,11 @@ public class GameServiceImpl implements GameService {
         game.setWinner("Game Draw");
 
         gameRepository.save(game);
-        return existingPlayer;
+
+        //start new game with same playerName
+        GameRequestStartDTO gameRequestStartDTO = new GameRequestStartDTO(existingPlayer.getPlayerName());
+
+        return startGame(gameRequestStartDTO);
     }
 
 }
