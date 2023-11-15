@@ -1,6 +1,7 @@
 package com.app.tictactoe.service.implementation;
 
 import com.app.tictactoe.dto.RequestDTO.GameRequestStartDTO;
+import com.app.tictactoe.dto.RequestDTO.PlayerRequestTurnDTO;
 import com.app.tictactoe.exception.PlayerActiveException;
 import com.app.tictactoe.exception.PlayerNotActiveException;
 import com.app.tictactoe.exception.PlayerNotExistException;
@@ -98,4 +99,8 @@ public class GameServiceImpl implements GameService {
         return startGame(gameRequestStartDTO);
     }
 
+    @Override
+    public Player playerTurn(PlayerRequestTurnDTO playerRequestTurnDTO) {
+        return null;
+    }
 }
