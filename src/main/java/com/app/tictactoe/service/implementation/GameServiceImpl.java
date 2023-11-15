@@ -5,7 +5,9 @@ import com.app.tictactoe.exception.PlayerActiveException;
 import com.app.tictactoe.exception.PlayerNotActiveException;
 import com.app.tictactoe.exception.PlayerNotExistException;
 import com.app.tictactoe.model.Game;
+import com.app.tictactoe.model.GameBoard;
 import com.app.tictactoe.model.Player;
+import com.app.tictactoe.repository.GameBoardRepository;
 import com.app.tictactoe.repository.GameRepository;
 import com.app.tictactoe.repository.PlayerRepository;
 import com.app.tictactoe.service.GameService;
@@ -17,12 +19,14 @@ public class GameServiceImpl implements GameService {
 
     private final GameRepository gameRepository;
     private final PlayerRepository playerRepository;
+    private final GameBoardRepository gameBoardRepository;
 
     // constructor injection
     @Autowired
-    public GameServiceImpl(GameRepository gameRepository, PlayerRepository playerRepository) {
+    public GameServiceImpl(GameRepository gameRepository, PlayerRepository playerRepository, GameBoardRepository gameBoardRepository1) {
         this.gameRepository = gameRepository;
         this.playerRepository = playerRepository;
+        this.gameBoardRepository = gameBoardRepository1;
     }
 
     @Override
@@ -49,6 +53,13 @@ public class GameServiceImpl implements GameService {
         game.setGameOver(false);
 
         gameRepository.save(game);
+
+        // initialize game board
+        GameBoard gameBoard = new GameBoard();
+        gameBoard.setGame(game);
+        
+        gameBoardRepository.save(gameBoard);
+
         return existingPlayer;
     }
 

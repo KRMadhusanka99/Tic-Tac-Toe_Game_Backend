@@ -12,6 +12,9 @@ import lombok.NoArgsConstructor;
 @Table(name="game_board")
 public class GameBoard {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int gameBoardId;
+
     @ManyToOne
     @JoinColumn(name = "game_id")
     private Game game;
