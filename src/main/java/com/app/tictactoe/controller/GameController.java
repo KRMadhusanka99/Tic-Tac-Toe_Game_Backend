@@ -18,18 +18,25 @@ public class GameController {
     @Autowired
     private GameService gameService;
 
+    private Player player;
+
     @PostMapping("/start")
     public ResponseEntity<GameResponseDTO> startGame(@RequestBody GameRequestStartDTO gameRequestStartDTO){
         try {
-            Player player = gameService.startGame(gameRequestStartDTO);
-            return ResponseEntity.ok(new GameResponseDTO("Game start successfully for " + player.getPlayerName()));
+            player = gameService.startGame(gameRequestStartDTO);
+            return ResponseEntity.ok(new GameResponseDTO(player.getPlayerName(),"Game start successfully"));
         }catch (PlayerNotExistException | PlayerActiveException e){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(new GameResponseDTO(e.getMessage()));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new GameResponseDTO(player.getPlayerName(),e.getMessage()));
         }
     }
 
-    @PostMapping("/reset/{playerName}")
+    @PatchMapping("/reset/{playerName}")
     public ResponseEntity<GameResponseDTO> resetGame(@PathVariable String playerName){
-        
+        try {
+            player = gameService.resetGame(playerName);
+            return ResponseEntity.ok().body(new GameResponseDTO(playerName,"Game rest successfully"));
+        }catch (PlayerNotExistException | PlayerActiveException e){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new GameResponseDTO(player.getPlayerName(),e.getMessage()));
+        }
     }
 }

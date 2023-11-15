@@ -5,4 +5,5 @@ import com.app.tictactoe.model.Player;
 
 public interface GameService {
     Player startGame(GameRequestStartDTO gameRequestStartDTO);
+    Player resetGame(String playerName);
 }

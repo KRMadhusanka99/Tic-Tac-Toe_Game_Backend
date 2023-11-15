@@ -2,6 +2,7 @@ package com.app.tictactoe.service.implementation;
 
 import com.app.tictactoe.dto.RequestDTO.GameRequestStartDTO;
 import com.app.tictactoe.exception.PlayerActiveException;
+import com.app.tictactoe.exception.PlayerNotActiveException;
 import com.app.tictactoe.exception.PlayerNotExistException;
 import com.app.tictactoe.model.Game;
 import com.app.tictactoe.model.Player;
@@ -11,6 +12,8 @@ import com.app.tictactoe.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class GameServiceImpl implements GameService {
     @Autowired
@@ -18,6 +21,7 @@ public class GameServiceImpl implements GameService {
     @Autowired
     private PlayerRepository playerRepository;
 
+    @Override
     public Player startGame(GameRequestStartDTO gameRequestStartDTO){
         //check player exist or not
         Player existingPlayer = playerRepository.findByPlayerName(gameRequestStartDTO.getPlayerName());
@@ -26,7 +30,7 @@ public class GameServiceImpl implements GameService {
         }
 
         //check player active or not
-        long noOfGamesByPlayer = gameRepository.FindByPlayerIdAndGameOver(existingPlayer.getId());
+        long noOfGamesByPlayer = gameRepository.findByPlayerIdAndGameOver(existingPlayer.getId());
         if(noOfGamesByPlayer > 0){
             throw new PlayerActiveException("Player is already in an active game.");
         }
@@ -39,6 +43,30 @@ public class GameServiceImpl implements GameService {
         game.setPlayer(existingPlayer);
         game.setFirstMove(firstMove);
         game.setGameOver(false);
+
+        gameRepository.save(game);
+        return existingPlayer;
+    }
+
+    @Override
+    public Player resetGame(String playerName) {
+        //check player exist or not
+        Player existingPlayer = playerRepository.findByPlayerName(playerName);
+        if(existingPlayer==null){
+            throw new PlayerNotExistException("Player is not registered");
+        }
+
+        //check player active or not
+        long noOfGamesByPlayer = gameRepository.findByPlayerIdAndGameOver(existingPlayer.getId());
+        if(noOfGamesByPlayer < 0){
+            throw new PlayerNotActiveException("Player is not active in a game.");
+        }
+
+        int gameId = gameRepository.gameIdFindByPlayerId(existingPlayer.getId());
+        Game game = gameRepository.getReferenceById(gameId);
+
+        game.setGameOver(true);
+        game.setWinner("Game Draw");
 
         gameRepository.save(game);
         return existingPlayer;
