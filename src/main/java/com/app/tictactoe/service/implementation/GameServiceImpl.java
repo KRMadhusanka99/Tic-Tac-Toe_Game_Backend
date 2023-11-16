@@ -31,14 +31,10 @@ public class GameServiceImpl implements GameService {
     @Override
     public Player startGame(GameRequestStartDTO gameRequestStartDTO){
         //check player exist or not
-        Player existingPlayer = playerRepository.findByPlayerName(gameRequestStartDTO.getPlayerName());
-        if(existingPlayer==null){
-            throw new PlayerNotExistException("Player is not registered");
-        }
+        Player existingPlayer = isPlayerExist(gameRequestStartDTO.getPlayerName());
 
         //check player active or not
-        long noOfGamesByPlayer = gameRepository.findByPlayerIdAndGameOver(existingPlayer.getId());
-        if(noOfGamesByPlayer > 0){
+        if(!isPlayerAvailable(existingPlayer)){
             throw new PlayerActiveException("Player is already in an active game.");
         }
 
@@ -69,14 +65,10 @@ public class GameServiceImpl implements GameService {
     @Override
     public Player resetGame(String playerName) {
         //check player exist or not
-        Player existingPlayer = playerRepository.findByPlayerName(playerName);
-        if(existingPlayer==null){
-            throw new PlayerNotExistException("Player is not registered");
-        }
+        Player existingPlayer = isPlayerExist(playerName);
 
         //check player active or not
-        long noOfGamesByPlayer = gameRepository.findByPlayerIdAndGameOver(existingPlayer.getId());
-        if(noOfGamesByPlayer <= 0){
+        if(isPlayerAvailable(existingPlayer)){
             throw new PlayerNotActiveException("Player is not active in a game.");
         }
 
@@ -97,7 +89,27 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public Player playerTurn(PlayerRequestTurnDTO playerRequestTurnDTO) {
-
+        //check player exist or not
+        Player player = isPlayerExist(playerRequestTurnDTO.getPlayerName());
         return null;
+    }
+
+    // check player username duplication
+    public Player isPlayerExist(String playerName){
+        Player existingPlayer = playerRepository.findByPlayerName(playerName);
+        if(existingPlayer==null){
+            throw new PlayerNotExistException("Player is not registered");
+        }
+        return existingPlayer;
+    }
+
+    // check player availability
+    public boolean isPlayerAvailable(Player player){
+        long noOfGamesByPlayer = gameRepository.findByPlayerIdAndGameOver(player.getId());
+        if(noOfGamesByPlayer <= 0){
+            return true;
+        }else{
+            return false;
+        }
     }
 }
