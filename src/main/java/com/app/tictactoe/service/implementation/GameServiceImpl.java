@@ -13,8 +13,6 @@ import com.app.tictactoe.service.GameService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 import java.util.Random;
 
 
@@ -42,32 +40,18 @@ public class GameServiceImpl implements GameService {
         }
 
         //choose who goes first(either "X" or "O")
-        Random random = new Random();
-        String firstMove = random.nextBoolean() ? "X": "O";
+        String firstMove = chooseFirstMove();
 
         // create a game
         Game game = new Game();
         game.setPlayer(existingPlayer);
         game.setFirstMove(firstMove);
         game.setGameOver(false);
+
         // initialize game board
-        if(firstMove.equals("O")) {
-            //minimax algorithm to find suitable place to put sign find the winner
-            int positionNum = 5;
-            char[][] gameBoardArray = new char[3][3];
-            gameBoardArray[0][0]='O';
-            gameBoardArray[0][1]='X';
-            gameBoardArray[0][2]='X';
-            gameBoardArray[1][0]='X';
-            gameBoardArray[1][1]='O';
-            gameBoardArray[1][2]='O';
-            gameBoardArray[2][0]='X';
-            gameBoardArray[2][1]='X';
-            gameBoardArray[2][2]='O';
-            game.setGameBoardArray(gameBoardArray);
-        }else {
-            game.setGameBoardArray(new char[3][3]);
-        }
+        char[][] gameBoard = initializeGameBoard(firstMove);
+
+        game.setGameBoardArray(gameBoard);
         gameRepository.save(game);
 
         return existingPlayer;
@@ -124,7 +108,7 @@ public class GameServiceImpl implements GameService {
     }
 
     // check player username duplication
-    public Player isPlayerExist(String playerName){
+    private Player isPlayerExist(String playerName){
         Player existingPlayer = playerRepository.findByPlayerName(playerName);
         if(existingPlayer==null){
             throw new PlayerNotExistException("Player is not registered");
@@ -133,12 +117,27 @@ public class GameServiceImpl implements GameService {
     }
 
     // check player availability
-    public boolean isPlayerAvailable(Player player){
+    private boolean isPlayerAvailable(Player player){
         long noOfGamesByPlayer = gameRepository.findByPlayerIdAndGameOver(player.getId());
-        if(noOfGamesByPlayer <= 0){
-            return true;
-        }else{
-            return false;
+        return noOfGamesByPlayer <= 0;
+    }
+
+    // who goes first
+    private String chooseFirstMove() {
+        Random random = new Random();
+        return random.nextBoolean() ? "X" : "O";
+    }
+
+    // initialize board
+    private char[][] initializeGameBoard(String firstMove) {
+        char[][] board = new char[3][3];
+
+        if (firstMove.equals("O")) {
+            // todo: implement minimax algorithm to find a suitable place to put a sign and find the winner
+            int positionNum = 5;
+            board[1][1] = 'O';
         }
+
+        return board;
     }
 }
