@@ -2,9 +2,7 @@ package com.app.tictactoe.service.implementation;
 
 import com.app.tictactoe.dto.RequestDTO.GameRequestStartDTO;
 import com.app.tictactoe.dto.RequestDTO.PlayerRequestTurnDTO;
-import com.app.tictactoe.exception.PlayerActiveException;
-import com.app.tictactoe.exception.PlayerNotActiveException;
-import com.app.tictactoe.exception.PlayerNotExistException;
+import com.app.tictactoe.exception.*;
 import com.app.tictactoe.model.Game;
 import com.app.tictactoe.model.Player;
 import com.app.tictactoe.repository.GameRepository;
@@ -98,13 +96,53 @@ public class GameServiceImpl implements GameService {
         int gameId = gameRepository.gameIdFindByPlayerId(existingPlayer.getId());
         Game game = gameRepository.getReferenceById(gameId);
         char [][] gameBoard= game.getGameBoardArray();
+
+        // check valid range of row and column(0-2)
+        int row = playerRequestTurnDTO.getRow();
+        int column = playerRequestTurnDTO.getColumn();
+
+        if (row < 0 || row > 2 || column < 0 || column > 2) {
+            throw new InvalidInputException("Invalid row and column indices. They should be within the range 0 to 2.");
+        }
+
+        // check availability row and column
+        if(gameBoard[row][column] == 'X' || gameBoard[row][column]=='O'){
+            throw new PositionNotAvailableException("Already available position. Try a different row and column. ");
+        }
+
+        // add the value
+        gameBoard[row][column]='X';
+
+        // wining condition
+        // Check if 'X' wins
+        if (checkWin(gameBoard, 'X')) {
+            // Update game status or do something when 'X' wins
+            game.setWinner(playerRequestTurnDTO.getPlayerName());
+            game.setGameOver(true);
+        } else {
+            // Call minimax for 'O' move
+            minimax(gameBoard, 0, true);
+            // Check if 'O' wins
+            if (checkWin(gameBoard, 'O')) {
+                // Update game status or do something when 'O' wins
+                game.setWinner("SERVER");
+                game.setGameOver(true);
+            }else if (isBoardFull(gameBoard)) {
+                // The game ends in a draw
+                game.setWinner("DRAW");
+                game.setGameOver(true);
+            }
+        }
+
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 System.out.print(gameBoard[i][j]);
             }
             System.out.println();
         }
-        return null;
+
+        gameRepository.save(game);
+        return existingPlayer;
     }
 
     // check player username duplication
@@ -130,14 +168,107 @@ public class GameServiceImpl implements GameService {
 
     // initialize board
     private char[][] initializeGameBoard(String firstMove) {
-        char[][] board = new char[3][3];
+        char[][] gameBoard = new char[3][3];
 
         if (firstMove.equals("O")) {
-            // todo: implement minimax algorithm to find a suitable place to put a sign and find the winner
-            int positionNum = 5;
-            board[1][1] = 'O';
+            // Use minimax to find the optimal move for 'O'
+            minimaxInitialMove(gameBoard);
         }
 
-        return board;
+        return gameBoard;
     }
+
+    // check winner
+    private boolean checkWin(char[][] gameBoard, char player) {
+        // Check rows and columns
+        for (int i = 0; i < 3; i++) {
+            if ((gameBoard[i][0] == player && gameBoard[i][1] == player && gameBoard[i][2] == player) ||
+                    (gameBoard[0][i] == player && gameBoard[1][i] == player && gameBoard[2][i] == player)) {
+                return true;
+            }
+        }
+
+        // Check diagonals
+        return (gameBoard[0][0] == player && gameBoard[1][1] == player && gameBoard[2][2] == player) ||
+                (gameBoard[0][2] == player && gameBoard[1][1] == player && gameBoard[2][0] == player);
+    }
+
+    // minimax algorithm
+    private int minimax(char[][] gameBoard, int depth, boolean maximizingPlayer) {
+        // Check if the game is over or if it's a terminal state
+        if (checkWin(gameBoard, 'O')) {
+            return 1; // 'O' wins
+        } else if (checkWin(gameBoard, 'X')) {
+            return -1; // 'X' wins
+        } else if (isBoardFull(gameBoard)) {
+            return 0; // It's a draw
+        }
+
+        if (maximizingPlayer) {
+            int bestScore = Integer.MIN_VALUE;
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    if (gameBoard[i][j] == '\u0000') { // Check if the cell is empty
+                        gameBoard[i][j] = 'O'; // Make the move for 'O'
+                        int score = minimax(gameBoard, depth + 1, false);
+                        gameBoard[i][j] = '\u0000'; // Undo the move
+                        bestScore = Math.max(score, bestScore);
+                    }
+                }
+            }
+            return bestScore;
+        } else {
+            int bestScore = Integer.MAX_VALUE;
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    if (gameBoard[i][j] == '\u0000') { // Check if the cell is empty
+                        gameBoard[i][j] = 'X'; // Make the move for 'X'
+                        int score = minimax(gameBoard, depth + 1, true);
+                        gameBoard[i][j] = '\u0000'; // Undo the move
+                        bestScore = Math.min(score, bestScore);
+                    }
+                }
+            }
+            return bestScore;
+        }
+    }
+
+    private boolean isBoardFull(char[][] gameBoard) {
+        // Check if the game board is full
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (gameBoard[i][j] == '\u0000') {
+                    return false; // Found an empty cell
+                }
+            }
+        }
+        return true; // All cells are filled
+    }
+
+    private void minimaxInitialMove(char[][] gameBoard) {
+        int bestScore = Integer.MIN_VALUE;
+        int bestMoveRow = -1;
+        int bestMoveCol = -1;
+
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (gameBoard[i][j] == '\u0000') { // Check if the cell is empty
+                    gameBoard[i][j] = 'O'; // Make the move for 'O'
+                    int score = minimax(gameBoard, 0, false);
+                    gameBoard[i][j] = '\u0000'; // Undo the move
+
+                    // Update the best move if the current move has a higher score
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestMoveRow = i;
+                        bestMoveCol = j;
+                    }
+                }
+            }
+        }
+
+        // Make the best move for 'O'
+        gameBoard[bestMoveRow][bestMoveCol] = 'O';
+    }
+
 }

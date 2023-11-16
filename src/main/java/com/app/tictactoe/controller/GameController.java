@@ -3,9 +3,7 @@ package com.app.tictactoe.controller;
 import com.app.tictactoe.dto.RequestDTO.GameRequestStartDTO;
 import com.app.tictactoe.dto.RequestDTO.PlayerRequestTurnDTO;
 import com.app.tictactoe.dto.ResponseDTO.GameResponseDTO;
-import com.app.tictactoe.exception.PlayerActiveException;
-import com.app.tictactoe.exception.PlayerNotActiveException;
-import com.app.tictactoe.exception.PlayerNotExistException;
+import com.app.tictactoe.exception.*;
 import com.app.tictactoe.model.Player;
 import com.app.tictactoe.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +42,13 @@ public class GameController {
 
     @PostMapping("/playerTurn")
     public ResponseEntity<GameResponseDTO> playerTurn(@RequestBody PlayerRequestTurnDTO playerRequestTurnDTO){
-        gameService.playerTurn(playerRequestTurnDTO);
-        return ResponseEntity.ok(new GameResponseDTO(playerRequestTurnDTO.getPlayerName(),"X placed successfully"));
+        try {
+            player = gameService.playerTurn(playerRequestTurnDTO);
+            return ResponseEntity.ok(new GameResponseDTO(playerRequestTurnDTO.getPlayerName(),"X placed successfully"));
+        }catch (PlayerNotExistException | PositionNotAvailableException| PlayerNotActiveException e){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new GameResponseDTO(playerRequestTurnDTO.getPlayerName(),e.getMessage()));
+        }catch (InvalidInputException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new GameResponseDTO(playerRequestTurnDTO.getPlayerName(),e.getMessage()));
+        }
     }
 }
