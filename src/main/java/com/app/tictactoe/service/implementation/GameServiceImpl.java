@@ -6,9 +6,7 @@ import com.app.tictactoe.exception.PlayerActiveException;
 import com.app.tictactoe.exception.PlayerNotActiveException;
 import com.app.tictactoe.exception.PlayerNotExistException;
 import com.app.tictactoe.model.Game;
-import com.app.tictactoe.model.GameBoard;
 import com.app.tictactoe.model.Player;
-import com.app.tictactoe.repository.GameBoardRepository;
 import com.app.tictactoe.repository.GameRepository;
 import com.app.tictactoe.repository.PlayerRepository;
 import com.app.tictactoe.service.GameService;
@@ -22,14 +20,12 @@ public class GameServiceImpl implements GameService {
 
     private final GameRepository gameRepository;
     private final PlayerRepository playerRepository;
-    private final GameBoardRepository gameBoardRepository;
 
     // constructor injection
     @Autowired
-    public GameServiceImpl(GameRepository gameRepository, PlayerRepository playerRepository, GameBoardRepository gameBoardRepository) {
+    public GameServiceImpl(GameRepository gameRepository, PlayerRepository playerRepository) {
         this.gameRepository = gameRepository;
         this.playerRepository = playerRepository;
-        this.gameBoardRepository = gameBoardRepository;
     }
 
     @Override
@@ -54,14 +50,17 @@ public class GameServiceImpl implements GameService {
         game.setPlayer(existingPlayer);
         game.setFirstMove(firstMove);
         game.setGameOver(false);
-
-        gameRepository.save(game);
-
         // initialize game board
-        GameBoard gameBoard = new GameBoard();
-        gameBoard.setGame(game);
-
-        gameBoardRepository.save(gameBoard);
+        if(firstMove.equals("O")) {
+            //minimax algorithm to find suitable place to put sign find the winner
+            int positionNum = 5;
+            char[][] gameBoardArray = new char[3][3];
+            gameBoardArray[1][1]='O';
+            game.setGameBoardArray(gameBoardArray);
+        }else {
+            game.setGameBoardArray(new char[3][3]);
+        }
+        gameRepository.save(game);
 
         return existingPlayer;
     }
@@ -89,10 +88,7 @@ public class GameServiceImpl implements GameService {
 
         gameRepository.save(game);
 
-        //clear game board
-        //List<GameBoard> gameBoard = gameBoardRepository.findAllByGameId(gameId);
-        gameBoardRepository.deleteGameBoardByGameId(gameId);
-
+        //clear game board and
         //start new game with same playerName
         GameRequestStartDTO gameRequestStartDTO = new GameRequestStartDTO(existingPlayer.getPlayerName());
 
@@ -101,6 +97,7 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public Player playerTurn(PlayerRequestTurnDTO playerRequestTurnDTO) {
+
         return null;
     }
 }

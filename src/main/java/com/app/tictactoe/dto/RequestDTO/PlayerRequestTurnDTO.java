@@ -9,5 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PlayerRequestTurnDTO {
     private String playerName;
-    private int positionNum;
+    private int row;
+    private int column;
 }

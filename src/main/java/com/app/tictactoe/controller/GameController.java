@@ -6,7 +6,6 @@ import com.app.tictactoe.dto.ResponseDTO.GameResponseDTO;
 import com.app.tictactoe.exception.PlayerActiveException;
 import com.app.tictactoe.exception.PlayerNotActiveException;
 import com.app.tictactoe.exception.PlayerNotExistException;
-import com.app.tictactoe.model.GameBoard;
 import com.app.tictactoe.model.Player;
 import com.app.tictactoe.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +42,7 @@ public class GameController {
         }
     }
 
-    @PostMapping("/playerTurn}")
+    @PostMapping("/playerTurn")
     public ResponseEntity<GameResponseDTO> playerTurn(@RequestBody PlayerRequestTurnDTO playerRequestTurnDTO){
         return ResponseEntity.ok(new GameResponseDTO(playerRequestTurnDTO.getPlayerName(),"X placed successfully"));
     }
