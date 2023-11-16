@@ -121,7 +121,11 @@ public class GameServiceImpl implements GameService {
             game.setGameOver(true);
         } else {
             // Call minimax for 'O' move
-            minimax(gameBoard, 0, true);
+            //minimax(gameBoard, 0, true);
+            int[] bestMove = minimax(gameBoard, 0, true);
+            int bestMoveRow = bestMove[1];
+            int bestMoveCol = bestMove[2];
+
             // Check if 'O' wins
             if (checkWin(gameBoard, 'O')) {
                 // Update game status or do something when 'O' wins
@@ -131,6 +135,9 @@ public class GameServiceImpl implements GameService {
                 // The game ends in a draw
                 game.setWinner("DRAW");
                 game.setGameOver(true);
+            }else{
+                // Make the best move for 'O'
+                gameBoard[bestMoveRow][bestMoveCol] = 'O';
             }
         }
 
@@ -141,6 +148,7 @@ public class GameServiceImpl implements GameService {
             System.out.println();
         }
 
+        game.setGameBoardArray(gameBoard);
         gameRepository.save(game);
         return existingPlayer;
     }
@@ -194,7 +202,7 @@ public class GameServiceImpl implements GameService {
     }
 
     // minimax algorithm
-    private int minimax(char[][] gameBoard, int depth, boolean maximizingPlayer) {
+    /*private int minimax(char[][] gameBoard, int depth, boolean maximizingPlayer) {
         // Check if the game is over or if it's a terminal state
         if (checkWin(gameBoard, 'O')) {
             return 1; // 'O' wins
@@ -232,6 +240,41 @@ public class GameServiceImpl implements GameService {
             return bestScore;
         }
     }
+*/
+    private int[] minimax(char[][] gameBoard, int depth, boolean maximizingPlayer) {
+        // Check if the game is over or if it's a terminal state
+        if (checkWin(gameBoard, 'O')) {
+            return new int[]{1, -1, -1}; // 'O' wins
+        } else if (checkWin(gameBoard, 'X')) {
+            return new int[]{-1, -1, -1}; // 'X' wins
+        } else if (isBoardFull(gameBoard)) {
+            return new int[]{0, -1, -1}; // It's a draw
+        }
+
+        int bestScore = maximizingPlayer ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+        int bestMoveRow = -1;
+        int bestMoveCol = -1;
+
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (gameBoard[i][j] == '\u0000') { // Check if the cell is empty
+                    gameBoard[i][j] = maximizingPlayer ? 'O' : 'X'; // Make the move
+                    int[] scoreAndMove = minimax(gameBoard, depth + 1, !maximizingPlayer);
+                    gameBoard[i][j] = '\u0000'; // Undo the move
+
+                    int score = scoreAndMove[0];
+                    if ((maximizingPlayer && score > bestScore) || (!maximizingPlayer && score < bestScore)) {
+                        bestScore = score;
+                        bestMoveRow = i;
+                        bestMoveCol = j;
+                    }
+                }
+            }
+        }
+
+        return new int[]{bestScore, bestMoveRow, bestMoveCol};
+    }
+
 
     private boolean isBoardFull(char[][] gameBoard) {
         // Check if the game board is full
@@ -254,12 +297,12 @@ public class GameServiceImpl implements GameService {
             for (int j = 0; j < 3; j++) {
                 if (gameBoard[i][j] == '\u0000') { // Check if the cell is empty
                     gameBoard[i][j] = 'O'; // Make the move for 'O'
-                    int score = minimax(gameBoard, 0, false);
+                    int[] score = minimax(gameBoard, 0, false);
                     gameBoard[i][j] = '\u0000'; // Undo the move
 
                     // Update the best move if the current move has a higher score
-                    if (score > bestScore) {
-                        bestScore = score;
+                    if (score[0] > bestScore) {
+                        bestScore = score[0];
                         bestMoveRow = i;
                         bestMoveCol = j;
                     }
