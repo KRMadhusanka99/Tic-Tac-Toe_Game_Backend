@@ -44,6 +44,7 @@ public class GameController {
 
     @PostMapping("/playerTurn")
     public ResponseEntity<GameResponseDTO> playerTurn(@RequestBody PlayerRequestTurnDTO playerRequestTurnDTO){
+        gameService.playerTurn(playerRequestTurnDTO);
         return ResponseEntity.ok(new GameResponseDTO(playerRequestTurnDTO.getPlayerName(),"X placed successfully"));
     }
 }

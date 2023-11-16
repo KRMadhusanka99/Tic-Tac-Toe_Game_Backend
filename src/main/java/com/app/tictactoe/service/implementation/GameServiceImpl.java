@@ -14,6 +14,9 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+import java.util.Random;
+
 
 @Service
 public class GameServiceImpl implements GameService {
@@ -39,7 +42,8 @@ public class GameServiceImpl implements GameService {
         }
 
         //choose who goes first(either "X" or "O")
-        String firstMove = Math.random() < 0.5 ? "X": "O";
+        Random random = new Random();
+        String firstMove = random.nextBoolean() ? "X": "O";
 
         // create a game
         Game game = new Game();
@@ -51,7 +55,15 @@ public class GameServiceImpl implements GameService {
             //minimax algorithm to find suitable place to put sign find the winner
             int positionNum = 5;
             char[][] gameBoardArray = new char[3][3];
+            gameBoardArray[0][0]='O';
+            gameBoardArray[0][1]='X';
+            gameBoardArray[0][2]='X';
+            gameBoardArray[1][0]='X';
             gameBoardArray[1][1]='O';
+            gameBoardArray[1][2]='O';
+            gameBoardArray[2][0]='X';
+            gameBoardArray[2][1]='X';
+            gameBoardArray[2][2]='O';
             game.setGameBoardArray(gameBoardArray);
         }else {
             game.setGameBoardArray(new char[3][3]);
@@ -76,6 +88,7 @@ public class GameServiceImpl implements GameService {
         Game game = gameRepository.getReferenceById(gameId);
 
         game.setGameOver(true);
+        //todo: if win the game set the winner name rather than game draw
         game.setWinner("Game Draw");
 
         gameRepository.save(game);
@@ -90,7 +103,23 @@ public class GameServiceImpl implements GameService {
     @Override
     public Player playerTurn(PlayerRequestTurnDTO playerRequestTurnDTO) {
         //check player exist or not
-        Player player = isPlayerExist(playerRequestTurnDTO.getPlayerName());
+        Player existingPlayer = isPlayerExist(playerRequestTurnDTO.getPlayerName());
+
+        //check player active or not
+        if(isPlayerAvailable(existingPlayer)){
+            throw new PlayerNotActiveException("Player is not active in a game.");
+        }
+
+        // get the game board for move
+        int gameId = gameRepository.gameIdFindByPlayerId(existingPlayer.getId());
+        Game game = gameRepository.getReferenceById(gameId);
+        char [][] gameBoard= game.getGameBoardArray();
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                System.out.print(gameBoard[i][j]);
+            }
+            System.out.println();
+        }
         return null;
     }
 

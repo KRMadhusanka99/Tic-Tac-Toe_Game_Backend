@@ -7,9 +7,9 @@ import org.springframework.data.jpa.repository.Query;
 public interface GameRepository extends JpaRepository<Game, Integer> {
 
     @Query("SELECT COUNT(g) FROM Game g WHERE g.player.id = :playerId AND g.gameOver=false")
-    long findByPlayerIdAndGameOver(int playerId);
+    Long findByPlayerIdAndGameOver(int playerId);
 
     @Query("SELECT g.gameId FROM Game g WHERE g.player.id = :playerId AND g.gameOver=false")
-    int gameIdFindByPlayerId(int playerId);
+    Integer gameIdFindByPlayerId(int playerId);
 
 }
