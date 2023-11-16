@@ -121,7 +121,6 @@ public class GameServiceImpl implements GameService {
             game.setGameOver(true);
         } else {
             // Call minimax for 'O' move
-            //minimax(gameBoard, 0, true);
             int[] bestMove = minimax(gameBoard, 0, true);
             int bestMoveRow = bestMove[1];
             int bestMoveCol = bestMove[2];
@@ -131,22 +130,18 @@ public class GameServiceImpl implements GameService {
                 // Update game status or do something when 'O' wins
                 game.setWinner("SERVER");
                 game.setGameOver(true);
-            }else if (isBoardFull(gameBoard)) {
+            } else if (isBoardFull(gameBoard)) {
                 // The game ends in a draw
                 game.setWinner("DRAW");
                 game.setGameOver(true);
-            }else{
+            } else {
                 // Make the best move for 'O'
                 gameBoard[bestMoveRow][bestMoveCol] = 'O';
             }
         }
 
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                System.out.print(gameBoard[i][j]);
-            }
-            System.out.println();
-        }
+
+        printGameBoard(gameBoard);
 
         game.setGameBoardArray(gameBoard);
         gameRepository.save(game);
@@ -314,4 +309,13 @@ public class GameServiceImpl implements GameService {
         gameBoard[bestMoveRow][bestMoveCol] = 'O';
     }
 
+    // Helper method to print the current game board
+    private void printGameBoard(char[][] gameBoard) {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                System.out.print(gameBoard[i][j]+" ");
+            }
+            System.out.println();
+        }
+    }
 }
