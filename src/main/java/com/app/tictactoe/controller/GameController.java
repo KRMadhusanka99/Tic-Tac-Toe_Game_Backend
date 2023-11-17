@@ -24,7 +24,7 @@ public class GameController {
     public ResponseEntity<GameResponseDTO> startGame(@RequestBody GameRequestStartDTO gameRequestStartDTO){
         try {
             player = gameService.startGame(gameRequestStartDTO);
-            return ResponseEntity.ok(new GameResponseDTO(player.getPlayerName(),"Game start successfully"));
+            return ResponseEntity.ok(new GameResponseDTO(gameRequestStartDTO.getPlayerName(),"Game start successfully"));
         }catch (PlayerNotExistException | PlayerActiveException e){
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new GameResponseDTO(gameRequestStartDTO.getPlayerName(),e.getMessage()));
         }
