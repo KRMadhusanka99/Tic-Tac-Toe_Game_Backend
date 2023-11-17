@@ -48,7 +48,7 @@ public class GameServiceImpl implements GameService {
 
         // initialize game board
         char[][] gameBoard = initializeGameBoard(firstMove);
-
+        printGameBoard(gameBoard);
         game.setGameBoardArray(gameBoard);
         gameRepository.save(game);
 
@@ -70,7 +70,6 @@ public class GameServiceImpl implements GameService {
         Game game = gameRepository.getReferenceById(gameId);
 
         game.setGameOver(true);
-        //todo: if win the game set the winner name rather than game draw
         game.setWinner("Game Rest");
 
         gameRepository.save(game);
