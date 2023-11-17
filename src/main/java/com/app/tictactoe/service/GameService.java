@@ -5,7 +5,7 @@ import com.app.tictactoe.dto.RequestDTO.PlayerRequestTurnDTO;
 import com.app.tictactoe.model.Player;
 
 public interface GameService {
-    Player startGame(GameRequestStartDTO gameRequestStartDTO);
-    Player resetGame(String playerName);
+    String startGame(GameRequestStartDTO gameRequestStartDTO);
+    String resetGame(String playerName);
     Player playerTurn(PlayerRequestTurnDTO playerRequestTurnDTO);
 }

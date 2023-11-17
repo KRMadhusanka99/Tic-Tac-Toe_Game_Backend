@@ -28,7 +28,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public Player startGame(GameRequestStartDTO gameRequestStartDTO){
+    public String startGame(GameRequestStartDTO gameRequestStartDTO){
         //check player exist or not
         Player existingPlayer = isPlayerExist(gameRequestStartDTO.getPlayerName());
 
@@ -52,12 +52,12 @@ public class GameServiceImpl implements GameService {
         game.setGameBoardArray(gameBoard);
         gameRepository.save(game);
 
-        return existingPlayer;
+        return firstMove.equals("O") ?"Computer Start first" : "You Start first";
     }
 
     @Transactional //manage transactions in Springboot
     @Override
-    public Player resetGame(String playerName) {
+    public String resetGame(String playerName) {
         //check player exist or not
         Player existingPlayer = isPlayerExist(playerName);
 

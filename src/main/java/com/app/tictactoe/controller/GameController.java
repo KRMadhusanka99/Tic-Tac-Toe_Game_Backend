@@ -18,13 +18,13 @@ public class GameController {
     @Autowired
     private GameService gameService;
 
-    private Player player;
+    private String msg;
 
     @PostMapping("/start")
     public ResponseEntity<GameResponseDTO> startGame(@RequestBody GameRequestStartDTO gameRequestStartDTO){
         try {
-            player = gameService.startGame(gameRequestStartDTO);
-            return ResponseEntity.ok(new GameResponseDTO(gameRequestStartDTO.getPlayerName(),"Game start successfully"));
+            msg= gameService.startGame(gameRequestStartDTO);
+            return ResponseEntity.ok(new GameResponseDTO(gameRequestStartDTO.getPlayerName(),"Game start successfully, "+msg));
         }catch (PlayerNotExistException | PlayerActiveException e){
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new GameResponseDTO(gameRequestStartDTO.getPlayerName(),e.getMessage()));
         }
@@ -33,8 +33,8 @@ public class GameController {
     @PatchMapping({"/reset","/reset/{playerName}"}) // Array of End points with not required playerName
     public ResponseEntity<GameResponseDTO> resetGame(@PathVariable(required = false) String playerName){
         try {
-            player = gameService.resetGame(playerName);
-            return ResponseEntity.ok().body(new GameResponseDTO(playerName,"Game rest successfully"));
+            msg = gameService.resetGame(playerName);
+            return ResponseEntity.ok().body(new GameResponseDTO(playerName,"Game rest successfully, "+msg));
         }catch (PlayerNotExistException | PlayerNotActiveException e){
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new GameResponseDTO(playerName,e.getMessage()));
         }
@@ -43,7 +43,7 @@ public class GameController {
     @PostMapping("/playerTurn")
     public ResponseEntity<GameResponseDTO> playerTurn(@RequestBody PlayerRequestTurnDTO playerRequestTurnDTO){
         try {
-            player = gameService.playerTurn(playerRequestTurnDTO);
+            Player player = gameService.playerTurn(playerRequestTurnDTO);
             return ResponseEntity.ok(new GameResponseDTO(playerRequestTurnDTO.getPlayerName(),"X placed successfully"));
         }catch (PlayerNotExistException | PositionNotAvailableException| PlayerNotActiveException e){
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new GameResponseDTO(playerRequestTurnDTO.getPlayerName(),e.getMessage()));
