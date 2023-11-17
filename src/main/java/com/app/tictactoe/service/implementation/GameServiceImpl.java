@@ -71,7 +71,7 @@ public class GameServiceImpl implements GameService {
 
         game.setGameOver(true);
         //todo: if win the game set the winner name rather than game draw
-        game.setWinner("Game Draw");
+        game.setWinner("Game Rest");
 
         gameRepository.save(game);
 
@@ -119,30 +119,51 @@ public class GameServiceImpl implements GameService {
             // Update game status or do something when 'X' wins
             game.setWinner(playerRequestTurnDTO.getPlayerName());
             game.setGameOver(true);
-        } else {
+            printGameBoard(gameBoard);
+            game.setGameBoardArray(gameBoard);
+            gameRepository.save(game);
+            throw new GameOverException("YOU WON!!!!");
+        } else if (isBoardFull(gameBoard)) {
+                // The game ends in a draw
+                game.setWinner("DRAW");
+                game.setGameOver(true);
+                printGameBoard(gameBoard);
+                game.setGameBoardArray(gameBoard);
+                gameRepository.save(game);
+                throw new GameOverException("GAME TIED!!!!");
+            }
             // Call minimax for 'O' move
             int[] bestMove = minimax(gameBoard, 0, true);
             int bestMoveRow = bestMove[1];
             int bestMoveCol = bestMove[2];
+            //Make the best move for 'O'
+            gameBoard[bestMoveRow][bestMoveCol] = 'O';
 
             // Check if 'O' wins
             if (checkWin(gameBoard, 'O')) {
                 // Update game status or do something when 'O' wins
                 game.setWinner("SERVER");
                 game.setGameOver(true);
+                printGameBoard(gameBoard);
+                game.setGameBoardArray(gameBoard);
+                gameRepository.save(game);
+                throw new GameOverException("YOU LOST!!!!");
             } else if (isBoardFull(gameBoard)) {
                 // The game ends in a draw
                 game.setWinner("DRAW");
                 game.setGameOver(true);
-            } else {
+                printGameBoard(gameBoard);
+                game.setGameBoardArray(gameBoard);
+                gameRepository.save(game);
+                throw new GameOverException("GAME TIED!!!!");
+            } /*else {
                 // Make the best move for 'O'
                 gameBoard[bestMoveRow][bestMoveCol] = 'O';
-            }
-        }
+            }*/
+
 
 
         printGameBoard(gameBoard);
-
         game.setGameBoardArray(gameBoard);
         gameRepository.save(game);
         return existingPlayer;

@@ -49,6 +49,8 @@ public class GameController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new GameResponseDTO(playerRequestTurnDTO.getPlayerName(),e.getMessage()));
         }catch (InvalidInputException e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new GameResponseDTO(playerRequestTurnDTO.getPlayerName(),e.getMessage()));
+        }catch (GameOverException e){
+            return ResponseEntity.status(HttpStatus.OK).body(new GameResponseDTO(playerRequestTurnDTO.getPlayerName(),e.getMessage()));
         }
     }
 }
