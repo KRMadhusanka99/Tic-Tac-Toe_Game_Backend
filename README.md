@@ -10,7 +10,7 @@ Welcome to Tic Tac Toe REST API. Tic Tac Toe is a two-player game where opponent
 - Ongoing games can reset 
 - Active players can play there turn
 
-##API Endpoints (Postman collection):
+## API Endpoints (Postman collection):
 - Postman Documentation URL: https://documenter.getpostman.com/view/25973908/2s9Ye8eubT
 - This API host uses AWS:
 ```base  
