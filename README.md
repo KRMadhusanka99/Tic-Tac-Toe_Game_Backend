@@ -14,7 +14,7 @@ Welcome to Tic Tac Toe REST API. Tic Tac Toe is a two-player game where opponent
 - Postman Documentation URL: https://documenter.getpostman.com/view/25973908/2s9Ye8eubT
 - This API host uses AWS:
 ```base  
-     http://34.229.109.59/
+     http://54.81.209.157/
 ```
 ## API Reference
 
